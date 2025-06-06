@@ -4,7 +4,6 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.content.ContentValues
-import android.database.Cursor
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -152,6 +151,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         db.execSQL(createSearchHistoryTable)
 
         insertDefaultCategories(db)
+        createIndexes(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -166,7 +166,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
     }
 
     private fun insertDefaultCategories(db: SQLiteDatabase) {
-        CategoryType.values().forEach { categoryType ->
+        CategoryType.entries.forEach { categoryType ->
             val values = ContentValues().apply {
                 put(COLUMN_ID, categoryType.id)
                 put(COLUMN_CATEGORY_NAME, categoryType.displayName)
