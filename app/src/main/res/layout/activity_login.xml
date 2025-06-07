@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_500"
+    android:padding="24dp"
+    tools:context=".auth.LoginActivity">
+
+    <TextView
+        android:id="@+id/tv_app_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:text="MinePrompt"
+        android:textColor="@color/primary_500"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="프롬프트로 연결하는 새로운 세상"
+        android:textColor="@color/gray_200"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_app_title" />
+
+    <LinearLayout
+        android:id="@+id/layout_login_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="64dp"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_subtitle">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="이메일"
+            app:boxBackgroundColor="@color/gray_600"
+            app:boxStrokeColor="@color/primary_500"
+            app:hintTextColor="@color/gray_200">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/white"
+                android:textColorHint="@color/gray_300" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:hint="비밀번호"
+            app:boxBackgroundColor="@color/gray_600"
+            app:boxStrokeColor="@color/primary_500"
+            app:hintTextColor="@color/gray_200"
+            app:passwordToggleEnabled="true">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:textColor="@color/white"
+                android:textColorHint="@color/gray_300" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/primary_500"
+            android:text="로그인"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:cornerRadius="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_signup"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginBottom="24dp"
+            android:text="회원가입"
+            android:textColor="@color/primary_500"
+            android:textSize="16sp"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/primary_500"
+            app:strokeWidth="2dp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_skip_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:text="게스트로 둘러보기"
+        android:textColor="@color/gray_300"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

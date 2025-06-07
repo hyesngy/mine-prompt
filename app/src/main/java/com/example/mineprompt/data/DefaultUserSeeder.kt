@@ -10,7 +10,7 @@ object  DefaultUserSeeder {
             mapOf(
                 "id" to 1,
                 "nickname" to "마인프롬프트",
-                "email" to "admin@mineprompt.com",
+                "email" to "admin@test.com",
                 "password" to "admin123",
                 "created_at" to System.currentTimeMillis(),
                 "updated_at" to System.currentTimeMillis()
@@ -18,7 +18,7 @@ object  DefaultUserSeeder {
             mapOf(
                 "id" to 2,
                 "nickname" to "나그네",
-                "email" to "writer@mineprompt.com",
+                "email" to "writer@test.com",
                 "password" to "writer123",
                 "created_at" to System.currentTimeMillis(),
                 "updated_at" to System.currentTimeMillis()
@@ -26,7 +26,7 @@ object  DefaultUserSeeder {
             mapOf(
                 "id" to 3,
                 "nickname" to "아무개",
-                "email" to "writer2@mineprompt.com",
+                "email" to "writer2@test.com",
                 "password" to "writer123",
                 "created_at" to System.currentTimeMillis(),
                 "updated_at" to System.currentTimeMillis()

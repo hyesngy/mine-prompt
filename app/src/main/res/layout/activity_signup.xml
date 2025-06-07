@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_500"
+    tools:context=".auth.SignupActivity">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/gray_500"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrow_back_24dp"
+            android:tint="@color/white" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="회원가입"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="기본 정보를 입력해주세요"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:text="관심 카테고리는 다음 단계에서 선택할 수 있어요"
+                android:textColor="@color/gray_200"
+                android:textSize="14sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="닉네임"
+                app:boxBackgroundColor="@color/gray_600"
+                app:boxStrokeColor="@color/primary_500"
+                app:hintTextColor="@color/gray_200">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_nickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/gray_300" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="이메일"
+                app:boxBackgroundColor="@color/gray_600"
+                app:boxStrokeColor="@color/primary_500"
+                app:hintTextColor="@color/gray_200">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/gray_300" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:hint="비밀번호"
+                app:boxBackgroundColor="@color/gray_600"
+                app:boxStrokeColor="@color/primary_500"
+                app:hintTextColor="@color/gray_200"
+                app:passwordToggleEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/gray_300" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:hint="비밀번호 확인"
+                app:boxBackgroundColor="@color/gray_600"
+                app:boxStrokeColor="@color/primary_500"
+                app:hintTextColor="@color/gray_200"
+                app:passwordToggleEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_confirm_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/gray_300" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_next"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/primary_500"
+                android:text="다음"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:cornerRadius="8dp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

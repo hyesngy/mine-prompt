@@ -1,5 +1,6 @@
 package com.example.mineprompt
 
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -8,7 +9,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.mineprompt.data.DataInitializer
+import com.example.mineprompt.data.UserPreferences
 import com.example.mineprompt.databinding.ActivityMainBinding
+import com.example.mineprompt.ui.auth.LoginActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,9 +20,19 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var dataInitializer: DataInitializer
+    private lateinit var userPreferences: UserPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 로그인 상태 확인
+        userPreferences = UserPreferences(this)
+        if (!userPreferences.isLoggedIn()) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
