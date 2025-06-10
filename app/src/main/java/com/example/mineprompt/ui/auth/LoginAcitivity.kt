@@ -2,6 +2,7 @@ package com.example.mineprompt.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mineprompt.MainActivity
@@ -27,6 +28,8 @@ class LoginActivity : AppCompatActivity() {
         databaseHelper = DatabaseHelper(this)
         userPreferences = UserPreferences(this)
 
+        triggerDatabaseForInspector()
+
         // 이미 로그인된 사용자인지 확인
         if (userPreferences.isLoggedIn()) {
             navigateToMain()
@@ -34,6 +37,33 @@ class LoginActivity : AppCompatActivity() {
         }
 
         setupClickListeners()
+    }
+
+    private fun triggerDatabaseForInspector() {
+        try {
+            val db = databaseHelper.readableDatabase
+
+            val cursor = db.rawQuery("SELECT COUNT(*) FROM users", null)
+            if (cursor.moveToFirst()) {
+                val userCount = cursor.getInt(0)
+            }
+            cursor.close()
+
+            val tables = listOf("categories", "prompts", "user_likes")
+            tables.forEach { tableName ->
+                try {
+                    val tableCursor = db.rawQuery("SELECT COUNT(*) FROM $tableName", null)
+                    if (tableCursor.moveToFirst()) {
+                        val count = tableCursor.getInt(0)
+                    }
+                    tableCursor.close()
+                } catch (e: Exception) {
+                    Log.w("LoginActivity", "$tableName 테이블 접근 실패: ${e.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("LoginActivity", "DB 트리거 실패", e)
+        }
     }
 
     private fun setupClickListeners() {
