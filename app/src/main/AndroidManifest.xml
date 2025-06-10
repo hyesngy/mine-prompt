@@ -32,6 +32,12 @@
         <activity
             android:name=".ui.auth.SignupActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.search.SearchActivity"
+            android:exported="false"
+            android:label="검색"
+            android:theme="@style/Theme.MinePrompt"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>

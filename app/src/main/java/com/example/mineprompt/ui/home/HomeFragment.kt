@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.mineprompt.R
 import com.example.mineprompt.databinding.FragmentHomeBinding
 import com.example.mineprompt.ui.common.adapter.PromptCardAdapter
+import com.example.mineprompt.ui.search.SearchActivity
 
 class HomeFragment : Fragment() {
 
@@ -31,6 +33,7 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
 
         setupRecyclerViews()
+        setupClickListeners()
         observeData()
 
         return root
@@ -68,6 +71,14 @@ class HomeFragment : Fragment() {
         binding.recyclerViewRecommended.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = recommendedAdapter
+        }
+    }
+
+    private fun setupClickListeners() {
+        // 검색바 클릭 시 검색 화면으로 이동
+        binding.root.findViewById<View>(R.id.layout_search_bar)?.setOnClickListener {
+            val intent = SearchActivity.newIntent(requireContext())
+            startActivity(intent)
         }
     }
 

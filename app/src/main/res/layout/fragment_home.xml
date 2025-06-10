@@ -12,20 +12,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="16dp"
+        android:paddingTop="24dp"
         android:paddingBottom="80dp">
 
         <!-- 검색바 -->
         <LinearLayout
+            android:id="@+id/layout_search_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="24dp"
             android:background="@drawable/search_background"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp"
-            android:paddingVertical="12dp">
+            android:paddingVertical="12dp"
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageView
                 android:layout_width="20dp"
