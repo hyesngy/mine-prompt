@@ -38,6 +38,11 @@
             android:label="검색"
             android:theme="@style/Theme.MinePrompt"
             android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ui.search.SearchResultActivity"
+            android:exported="false"
+            android:label="검색 결과"
+            android:theme="@style/Theme.MinePrompt" />
     </application>
 
 </manifest>

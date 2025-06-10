@@ -189,7 +189,13 @@ class SearchActivity : AppCompatActivity() {
     private fun performSearch() {
         val query = binding.etSearch.text.toString().trim()
         if (query.isNotEmpty()) {
-            searchViewModel.performSearch(query)
+            // 최근 검색어에 추가
+            searchViewModel.addToRecentSearches(query)
+
+            // 검색 결과 페이지로 이동
+            val intent = SearchResultActivity.newIntent(this, query)
+            startActivity(intent)
+
             hideKeyboard()
         }
     }

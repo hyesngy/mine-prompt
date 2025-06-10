@@ -108,7 +108,7 @@ class SearchViewModel : ViewModel() {
         )
     }
 
-    private fun addToRecentSearches(query: String) {
+    fun addToRecentSearches(query: String) {
         val currentSearches = _recentSearches.value?.toMutableList() ?: mutableListOf()
 
         // 중복 제거
