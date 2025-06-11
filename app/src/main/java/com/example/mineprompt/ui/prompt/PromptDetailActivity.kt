@@ -83,8 +83,7 @@ class PromptDetailActivity : AppCompatActivity() {
         }
 
         binding.btnViewPrompt.setOnClickListener {
-            // TODO: 프롬프트 보기 (Bottom Sheet로 구현 예정)
-            ToastUtils.showComingSoon(this)
+            showPromptBottomSheet()
         }
 
         binding.btnCopyPrompt.setOnClickListener {
@@ -94,6 +93,16 @@ class PromptDetailActivity : AppCompatActivity() {
         binding.ivFavorite.setOnClickListener {
             promptDetailViewModel.toggleLike()
         }
+    }
+
+    private fun showPromptBottomSheet() {
+        val promptDetail = promptDetailViewModel.promptDetail.value ?: return
+
+        val bottomSheet = PromptBottomSheetFragment.newInstance(
+            title = promptDetail.title,
+            content = promptDetail.content
+        )
+        bottomSheet.show(supportFragmentManager, "PromptBottomSheet")
     }
 
     private fun observeData() {

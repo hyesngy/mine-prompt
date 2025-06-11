@@ -313,7 +313,7 @@
             android:layout_height="48dp"
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
-            android:text="프롬프트 보기"
+            android:text="프롬프트 전체보기"
             android:textColor="@color/primary_500"
             android:textSize="14sp"
             app:cornerRadius="8dp"
