@@ -1,26 +1,25 @@
 package com.example.mineprompt.ui.create
 
 import android.app.Application
+import android.content.ContentValues
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.mineprompt.data.CategoryType
 import com.example.mineprompt.data.DatabaseHelper
-import com.example.mineprompt.data.PromptLength
-import com.example.mineprompt.data.PromptStyle
+import com.example.mineprompt.data.OpenAIService
 import com.example.mineprompt.data.UserPreferences
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import android.content.ContentValues
-import android.util.Log
-import com.example.mineprompt.utils.ToastUtils
 
 class CreateViewModel(application: Application) : AndroidViewModel(application) {
 
     private val databaseHelper = DatabaseHelper(application)
     private val userPreferences = UserPreferences(application)
+    private val openAIService = OpenAIService()
 
     private val _text = MutableLiveData<String>().apply {
         value = "생성 화면입니다"
@@ -33,6 +32,9 @@ class CreateViewModel(application: Application) : AndroidViewModel(application) 
     private val _generationResult = MutableLiveData<Result<Long>>()
     val generationResult: LiveData<Result<Long>> = _generationResult
 
+    private val _error = MutableLiveData<String?>()
+    val error: LiveData<String?> = _error
+
     companion object {
         private const val TAG = "CreateViewModel"
     }
@@ -41,24 +43,63 @@ class CreateViewModel(application: Application) : AndroidViewModel(application) 
         if (_isGenerating.value == true) return
 
         _isGenerating.value = true
+        _error.value = null
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // AI 생성 시뮬레이션 (실제로는 OpenAI API 호출)
-                val generatedPrompt = simulateAIGeneration(request)
+                Log.d(TAG, "프롬프트, 제목, 카테고리 생성 시작")
 
-                // 생성된 프롬프트를 DB에 저장
-                val promptId = saveGeneratedPrompt(generatedPrompt, request)
+                // 프롬프트 생성, 제목 생성, 카테고리 분류 병렬 실행
+                val promptJob = async { openAIService.generatePrompt(request) }
+                val titleJob = async { openAIService.generateTitle(request) }
+                val categoryJob = async { openAIService.classifyCategory(request) }
 
-                if (promptId != -1L) {
-                    _generationResult.postValue(Result.success(promptId))
+                val promptResult = promptJob.await()
+                val titleResult = titleJob.await()
+                val categoryResult = categoryJob.await()
+
+                if (promptResult.isSuccess && titleResult.isSuccess && categoryResult.isSuccess) {
+                    val generatedPrompt = promptResult.getOrNull()!!
+                    val generatedTitle = titleResult.getOrNull()!!
+                    val categories = categoryResult.getOrNull() ?: listOf("일상")
+
+                    Log.d(TAG, "AI 프롬프트 생성 완료")
+                    Log.d(TAG, "AI 제목 생성 완료: $generatedTitle")
+                    Log.d(TAG, "AI 카테고리 분류 완료: $categories")
+
+                    // 생성된 프롬프트를 DB에 저장 (AI 생성된 제목과 카테고리 포함)
+                    val promptId = saveGeneratedPrompt(generatedPrompt, generatedTitle, request, categories)
+
+                    if (promptId != -1L) {
+                        Log.d(TAG, "프롬프트 저장 완료: ID=$promptId")
+                        _generationResult.postValue(Result.success(promptId))
+                    } else {
+                        Log.e(TAG, "프롬프트 저장 실패")
+                        _error.postValue("프롬프트 저장 중 오류가 발생했습니다.")
+                        _generationResult.postValue(Result.failure(Exception("프롬프트 저장 실패")))
+                    }
                 } else {
-                    _generationResult.postValue(Result.failure(Exception("프롬프트 저장 실패")))
+                    // 생성 실패 시
+                    val errorMsg = promptResult.exceptionOrNull()?.message
+                        ?: titleResult.exceptionOrNull()?.message
+                        ?: categoryResult.exceptionOrNull()?.message
+                        ?: "프롬프트 생성 실패"
+
+                    Log.e(TAG, "AI 프롬프트/제목/카테고리 생성 실패: $errorMsg")
+                    _error.postValue(errorMsg)
+                    _generationResult.postValue(
+                        Result.failure(
+                            promptResult.exceptionOrNull()
+                                ?: titleResult.exceptionOrNull()
+                                ?: categoryResult.exceptionOrNull()
+                                ?: Exception("생성 실패")
+                        )
+                    )
                 }
 
             } catch (e: Exception) {
-                Log.e(TAG, "프롬프트 생성 실패", e)
-                ToastUtils.showGeneralError(getApplication())
+                Log.e(TAG, "프롬프트 생성 중 예외 발생", e)
+                _error.postValue("프롬프트 생성 중 오류가 발생했습니다.")
                 _generationResult.postValue(Result.failure(e))
             } finally {
                 _isGenerating.postValue(false)
@@ -66,54 +107,20 @@ class CreateViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    private suspend fun simulateAIGeneration(request: PromptGenerationRequest): String {
-        // AI 생성 시뮬레이션 (2-3초 딜레이)
-        delay(2500)
-
-        // 실제로는 OpenAI API 호출하여 프롬프트 생성
-        // 지금은 더미 데이터로 시뮬레이션
-        return generateDummyPrompt(request)
-    }
-
-    private fun generateDummyPrompt(request: PromptGenerationRequest): String {
-        val lengthText = when (request.length) {
-            "SHORT" -> "간단하게"
-            "MEDIUM" -> "상세하게"
-            "LONG" -> "구체적이고 포괄적으로"
-            else -> "적절하게"
-        }
-
-        val styleText = when (request.style) {
-            "창의적" -> "창의적이고 혁신적인 접근으로"
-            "공식적" -> "공식적이고 전문적인 어조로"
-            "논리적" -> "논리적이고 체계적인 방식으로"
-            "감성적" -> "감성적이고 공감적인 톤으로"
-            "전문적" -> "전문적이고 기술적인 관점에서"
-            else -> "자연스러운 방식으로"
-        }
-
-        return buildString {
-            append("[${request.purpose}]에 대해 ${lengthText} ${styleText} ")
-            append("답변해주세요. ")
-
-            if (request.keywords.isNotEmpty()) {
-                append("다음 키워드들을 포함해주세요: ${request.keywords}. ")
-            }
-
-            if (request.language != "한국어") {
-                append("답변은 ${request.language}로 작성해주세요.")
-            }
-        }
-    }
-
-    private fun saveGeneratedPrompt(generatedPrompt: String, request: PromptGenerationRequest): Long {
+    private fun saveGeneratedPrompt(
+        generatedPrompt: String,
+        generatedTitle: String,
+        request: PromptGenerationRequest,
+        aiCategories: List<String>
+    ): Long {
         val db = databaseHelper.writableDatabase
         val currentUserId = userPreferences.getUserId()
 
         try {
             val values = ContentValues().apply {
-                put("title", generateTitle(request.purpose))
+                put("title", generatedTitle)
                 put("content", generatedPrompt)
+                put("description", generatedTitle)
                 put("purpose", request.purpose)
                 put("keywords", request.keywords)
                 put("length", request.length)
@@ -130,8 +137,7 @@ class CreateViewModel(application: Application) : AndroidViewModel(application) 
             val promptId = db.insert("prompts", null, values)
 
             if (promptId != -1L) {
-                // 자동으로 카테고리 매핑
-                assignCategoriesToPrompt(promptId, request)
+                assignAiCategoriesToPrompt(promptId, aiCategories)
             }
 
             return promptId
@@ -142,77 +148,42 @@ class CreateViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    private fun generateTitle(purpose: String): String {
-        // 목적에서 제목 자동 생성
-        val cleanPurpose = purpose.take(20).trim()
-        return if (cleanPurpose.length < purpose.length) {
-            "$cleanPurpose..."
-        } else {
-            cleanPurpose
+    private fun assignAiCategoriesToPrompt(promptId: Long, categoryNames: List<String>) {
+        val db = databaseHelper.writableDatabase
+
+        categoryNames.forEach { categoryName ->
+            try {
+                val categoryType = when (categoryName) {
+                    "콘텐츠 제작" -> CategoryType.CONTENT_CREATION
+                    "비즈니스" -> CategoryType.BUSINESS
+                    "마케팅" -> CategoryType.MARKETING
+                    "글쓰기/창작" -> CategoryType.WRITING
+                    "개발" -> CategoryType.DEVELOPMENT
+                    "학습" -> CategoryType.LEARNING
+                    "생산성" -> CategoryType.PRODUCTIVITY
+                    "자기계발" -> CategoryType.SELF_DEVELOPMENT
+                    "언어" -> CategoryType.LANGUAGE
+                    "재미" -> CategoryType.FUN
+                    "일상" -> CategoryType.DAILY
+                    "법률/재무" -> CategoryType.LEGAL
+                    else -> CategoryType.DAILY
+                }
+
+                val values = ContentValues().apply {
+                    put("prompt_id", promptId)
+                    put("category_id", categoryType.id)
+                }
+
+                db.insertWithOnConflict("prompt_categories", null, values, android.database.sqlite.SQLiteDatabase.CONFLICT_IGNORE)
+                Log.d(TAG, "AI 카테고리 매핑 저장: promptId=$promptId, category=$categoryName (${categoryType.id})")
+
+            } catch (e: Exception) {
+                Log.e(TAG, "AI 카테고리 매핑 저장 실패: category=$categoryName", e)
+            }
         }
     }
 
-    private fun assignCategoriesToPrompt(promptId: Long, request: PromptGenerationRequest) {
-        // 키워드와 목적을 기반으로 카테고리 자동 매핑
-        val keywords = request.keywords.lowercase() + " " + request.purpose.lowercase()
-        val assignedCategories = mutableSetOf<Long>()
-
-        // 간단한 키워드 매칭으로 카테고리 결정
-        when {
-            keywords.contains("콘텐츠") || keywords.contains("유튜브") || keywords.contains("영상") -> {
-                assignedCategories.add(CategoryType.CONTENT_CREATION.id)
-            }
-            keywords.contains("비즈니스") || keywords.contains("사업") || keywords.contains("회사") -> {
-                assignedCategories.add(CategoryType.BUSINESS.id)
-            }
-            keywords.contains("마케팅") || keywords.contains("광고") || keywords.contains("홍보") -> {
-                assignedCategories.add(CategoryType.MARKETING.id)
-            }
-            keywords.contains("글쓰기") || keywords.contains("소설") || keywords.contains("창작") -> {
-                assignedCategories.add(CategoryType.WRITING.id)
-            }
-            keywords.contains("개발") || keywords.contains("코딩") || keywords.contains("프로그래밍") -> {
-                assignedCategories.add(CategoryType.DEVELOPMENT.id)
-            }
-            keywords.contains("학습") || keywords.contains("공부") || keywords.contains("교육") -> {
-                assignedCategories.add(CategoryType.LEARNING.id)
-            }
-            keywords.contains("생산성") || keywords.contains("효율") || keywords.contains("관리") -> {
-                assignedCategories.add(CategoryType.PRODUCTIVITY.id)
-            }
-            keywords.contains("자기계발") || keywords.contains("성장") || keywords.contains("발전") -> {
-                assignedCategories.add(CategoryType.SELF_DEVELOPMENT.id)
-            }
-            keywords.contains("언어") || keywords.contains("영어") || keywords.contains("번역") -> {
-                assignedCategories.add(CategoryType.LANGUAGE.id)
-            }
-            keywords.contains("재미") || keywords.contains("유머") || keywords.contains("엔터") -> {
-                assignedCategories.add(CategoryType.FUN.id)
-            }
-            keywords.contains("일상") || keywords.contains("생활") || keywords.contains("취미") -> {
-                assignedCategories.add(CategoryType.DAILY.id)
-            }
-            keywords.contains("법률") || keywords.contains("재무") || keywords.contains("금융") -> {
-                assignedCategories.add(CategoryType.LEGAL.id)
-            }
-            else -> {
-                // 기본 카테고리 (일반적인 경우)
-                assignedCategories.add(CategoryType.DAILY.id)
-            }
-        }
-
-        // DB에 카테고리 매핑 저장
-        val db = databaseHelper.writableDatabase
-        assignedCategories.forEach { categoryId ->
-            try {
-                val values = ContentValues().apply {
-                    put("prompt_id", promptId)
-                    put("category_id", categoryId)
-                }
-                db.insert("prompt_categories", null, values)
-            } catch (e: Exception) {
-                Log.e(TAG, "카테고리 매핑 저장 실패: categoryId=$categoryId", e)
-            }
-        }
+    fun clearError() {
+        _error.value = null
     }
 }

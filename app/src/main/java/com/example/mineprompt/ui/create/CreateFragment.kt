@@ -58,7 +58,7 @@ class CreateFragment : Fragment() {
             showLanguageSelectionDialog()
         }
 
-        // 길이 선택 버튼
+        // 길이 선택
         binding.btnLengthShort.setOnClickListener {
             selectedLength = "SHORT"
             updateLengthButtons(selectedLength)
@@ -74,7 +74,7 @@ class CreateFragment : Fragment() {
             updateLengthButtons(selectedLength)
         }
 
-        // 스타일 선택 버튼
+        // 스타일 선택
         binding.btnStyleGeneral.setOnClickListener {
             selectedStyle = "일반적"
             updateStyleButtons(selectedStyle)
@@ -117,24 +117,37 @@ class CreateFragment : Fragment() {
     }
 
     private fun observeViewModel() {
+        // 생성 상태 관찰
         createViewModel.isGenerating.observe(viewLifecycleOwner) { isGenerating ->
-            // 로딩 상태에 따른 UI 변경
             binding.btnGenerate.isEnabled = !isGenerating
             if (isGenerating) {
-                binding.btnGenerate.text = "생성 중..."
+                binding.btnGenerate.text = "AI가 생성 중..."
             } else {
                 binding.btnGenerate.text = "프롬프트 생성"
             }
         }
 
+        // 생성 결과 관찰
         createViewModel.generationResult.observe(viewLifecycleOwner) { result ->
             if (result.isSuccess) {
+                val promptId = result.getOrNull()
                 ToastUtils.showPromptCreated(requireContext())
-                // TODO: 생성된 프롬프트 상세 화면으로 이동
-                // val promptId = result.getOrNull()
-                // navigateToPromptDetail(promptId)
+
+                // 생성된 프롬프트 상세 화면으로 이동
+                promptId?.let { id ->
+                    navigateToPromptDetail(id)
+                }
             } else {
-                ToastUtils.showGeneralError(requireContext())
+                val error = result.exceptionOrNull()?.message ?: "프롬프트 생성 실패"
+                ToastUtils.showShort(requireContext(), error)
+            }
+        }
+
+        // 에러 메시지 관찰
+        createViewModel.error.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                ToastUtils.showShort(requireContext(), it)
+                createViewModel.clearError()
             }
         }
     }
@@ -202,11 +215,9 @@ class CreateFragment : Fragment() {
     }
 
     private fun resetForm() {
-        // 입력 필드 초기화
         binding.etPurpose.setText("")
         binding.etKeywords.setText("")
 
-        // 옵션들 기본값으로 리셋
         selectedLength = "MEDIUM"
         selectedStyle = "일반적"
         selectedLanguage = "한국어"
@@ -247,10 +258,16 @@ class CreateFragment : Fragment() {
             language = selectedLanguage
         )
 
-        // 프롬프트 생성 요청
         createViewModel.generatePrompt(promptRequest)
+    }
 
-        ToastUtils.showShort(requireContext(), "AI가 프롬프트를 생성 중입니다...")
+    private fun navigateToPromptDetail(promptId: Long) {
+        try {
+            val intent = com.example.mineprompt.ui.prompt.PromptDetailActivity.newIntent(requireContext(), promptId)
+            startActivity(intent)
+        } catch (e: Exception) {
+            ToastUtils.showShort(requireContext(), "프롬프트 화면으로 이동할 수 없습니다")
+        }
     }
 
     override fun onDestroyView() {
