@@ -4,5 +4,5 @@
     <string name="title_category">카테고리</string>
     <string name="title_create">생성</string>
     <string name="title_favorite">좋아요</string>
-    <string name="title_user">마이</string>
+    <string name="title_user">마이페이지</string>
 </resources>
