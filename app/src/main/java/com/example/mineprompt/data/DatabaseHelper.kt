@@ -37,6 +37,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         // Prompts 테이블 컬럼
         private const val COLUMN_PROMPT_TITLE = "title"
         private const val COLUMN_PROMPT_CONTENT = "content"
+        private const val COLUMN_PROMPT_DESCRIPTION = "description"
         private const val COLUMN_PROMPT_PURPOSE = "purpose"
         private const val COLUMN_PROMPT_KEYWORDS = "keywords"
         private const val COLUMN_PROMPT_LENGTH = "length"
@@ -82,6 +83,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                 $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
                 $COLUMN_PROMPT_TITLE TEXT NOT NULL,
                 $COLUMN_PROMPT_CONTENT TEXT NOT NULL,
+                $COLUMN_PROMPT_DESCRIPTION TEXT,
                 $COLUMN_PROMPT_PURPOSE TEXT,
                 $COLUMN_PROMPT_KEYWORDS TEXT,
                 $COLUMN_PROMPT_LENGTH TEXT NOT NULL DEFAULT 'MEDIUM',

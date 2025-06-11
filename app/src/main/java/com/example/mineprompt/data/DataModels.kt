@@ -20,6 +20,7 @@ data class Prompt(
     val id: Long = 0,
     val title: String,
     val content: String,
+    val description: String? = null,
     val purpose: String? = null,
     val keywords: String? = null,
     val length: PromptLength = PromptLength.MEDIUM,
