@@ -34,9 +34,6 @@ class SearchActivity : AppCompatActivity() {
         // 액션바 제목 설정
         supportActionBar?.title = "검색"
 
-        // 상태바 설정
-        window.statusBarColor = ContextCompat.getColor(this, R.color.gray_500)
-
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
