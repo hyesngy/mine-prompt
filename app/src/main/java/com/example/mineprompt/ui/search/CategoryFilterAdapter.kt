@@ -63,13 +63,6 @@ class CategoryFilterAdapter(
     }
 }
 
-data class CategoryFilterItem(
-    val id: Long,
-    val name: String,
-    val iconRes: Int,
-    var isSelected: Boolean = false
-)
-
 class CategoryFilterDiffCallback : DiffUtil.ItemCallback<CategoryFilterItem>() {
     override fun areItemsTheSame(oldItem: CategoryFilterItem, newItem: CategoryFilterItem): Boolean {
         return oldItem.id == newItem.id
