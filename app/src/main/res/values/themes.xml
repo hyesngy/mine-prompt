@@ -8,7 +8,7 @@
         <item name="colorSecondary">@color/secondary_500</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">@color/gray_600</item>
 
         <item name="android:windowBackground">@color/gray_500</item>
         <item name="android:colorBackground">@color/gray_500</item>

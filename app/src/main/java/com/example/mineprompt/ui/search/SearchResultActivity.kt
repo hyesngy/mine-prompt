@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mineprompt.R
@@ -33,9 +32,6 @@ class SearchResultActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // 상태바 설정
-        window.statusBarColor = ContextCompat.getColor(this, R.color.gray_500)
 
         binding = ActivitySearchResultBinding.inflate(layoutInflater)
         setContentView(binding.root)

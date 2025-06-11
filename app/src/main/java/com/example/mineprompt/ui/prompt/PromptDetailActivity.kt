@@ -38,9 +38,6 @@ class PromptDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // 상태바 설정
-        window.statusBarColor = ContextCompat.getColor(this, R.color.gray_500)
-
         binding = ActivityPromptDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
