@@ -36,4 +36,12 @@
     <color name="secondary_800">#FF101942</color>
     <color name="secondary_900">#FF080D21</color>
 
+    <color name="green_400">#FF4ADE80</color>
+    <color name="yellow_400">#FFFBBF24</color>
+    <color name="blue_400">#FF60A5FA</color>
+    <color name="purple_400">#FFA78BFA</color>
+    <color name="red_400">#FFF87171</color>
+    <color name="red_500">#FFEF4444</color>
+    <color name="red_800">#FF991B1B</color>
+    <color name="red_900">#FF7F1D1D</color>
 </resources>
