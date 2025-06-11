@@ -163,7 +163,6 @@ class SearchViewModel : ViewModel() {
     }
 }
 
-// 데이터 클래스들
 data class PopularSearchItem(
     val rank: Int,
     val keyword: String,

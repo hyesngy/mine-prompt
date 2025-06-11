@@ -4,12 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mineprompt.R
+import com.example.mineprompt.data.CategoryType
 import com.example.mineprompt.databinding.ActivitySearchResultBinding
+import com.example.mineprompt.databinding.DialogCategoryFilterBinding
 import com.example.mineprompt.ui.common.adapter.PromptCardAdapter
 
 class SearchResultActivity : AppCompatActivity() {
@@ -30,9 +33,6 @@ class SearchResultActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // 액션바 제목 설정
-        supportActionBar?.title = "검색 결과"
 
         // 상태바 설정
         window.statusBarColor = ContextCompat.getColor(this, R.color.gray_500)
@@ -79,8 +79,11 @@ class SearchResultActivity : AppCompatActivity() {
         }
 
         binding.tvSortFilter.setOnClickListener {
-            // 정렬 필터 다이얼로그 표시
             showSortFilterDialog()
+        }
+
+        binding.btnCategoryFilter.setOnClickListener {
+            showCategoryFilterDialog()
         }
     }
 
@@ -100,9 +103,14 @@ class SearchResultActivity : AppCompatActivity() {
             }
         }
 
-        // 활성 필터들
-        searchResultViewModel.activeFilters.observe(this) { filters ->
-            updateFilterTags(filters)
+        // 선택된 카테고리 개수만 표시
+        searchResultViewModel.selectedCategories.observe(this) { categories ->
+            val selectedCount = categories.count { it.isSelected }
+            binding.btnCategoryFilter.text = if (selectedCount > 0) {
+                "카테고리 ($selectedCount)"
+            } else {
+                "카테고리 선택"
+            }
         }
 
         // 정렬 필터
@@ -111,28 +119,75 @@ class SearchResultActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateFilterTags(filters: List<SearchFilter>) {
-        binding.flexboxFilterTags.removeAllViews()
+    private fun showCategoryFilterDialog() {
+        val dialogBinding = DialogCategoryFilterBinding.inflate(layoutInflater)
 
-        filters.forEach { filter ->
-            val tagView = createFilterTag(filter) {
-                searchResultViewModel.removeFilter(filter)
-            }
-            binding.flexboxFilterTags.addView(tagView)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogBinding.root)
+            .create()
+
+        // 카테고리 어댑터 설정
+        val categoryAdapter = CategoryFilterAdapter { category ->
+            // 선택/해제는 어댑터에서 처리
+        }
+
+        dialogBinding.recyclerViewCategories.apply {
+            layoutManager = LinearLayoutManager(this@SearchResultActivity)
+            adapter = categoryAdapter
+        }
+
+        // 카테고리 목록 생성
+        val categories = CategoryType.entries.map { categoryType ->
+            CategoryFilterItem(
+                id = categoryType.id,
+                name = categoryType.displayName,
+                iconRes = getCategoryIcon(categoryType),
+                isSelected = false // 일단 기본값 false
+            )
+        }
+        categoryAdapter.submitList(categories)
+
+        // 버튼 리스너
+        dialogBinding.btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnApply.setOnClickListener {
+            // 선택된 카테고리들 적용
+            searchResultViewModel.applyCategoryFilters(categoryAdapter.currentList)
+            dialog.dismiss()
+        }
+
+        dialogBinding.tvClearAll.setOnClickListener {
+            // 모든 선택 해제
+            val clearedCategories = categoryAdapter.currentList.map { it.copy(isSelected = false) }
+            categoryAdapter.submitList(clearedCategories)
+        }
+
+        dialog.show()
+    }
+
+    private fun getCategoryIcon(categoryType: CategoryType): Int {
+        return when (categoryType) {
+            CategoryType.CONTENT_CREATION -> R.drawable.ic_category_content_creation_32dp
+            CategoryType.BUSINESS -> R.drawable.ic_category_business_32dp
+            CategoryType.MARKETING -> R.drawable.ic_category_marketing_32dp
+            CategoryType.WRITING -> R.drawable.ic_category_writing_32dp
+            CategoryType.DEVELOPMENT -> R.drawable.ic_category_development_32dp
+            CategoryType.LEARNING -> R.drawable.ic_category_learning_32dp
+            CategoryType.PRODUCTIVITY -> R.drawable.ic_category_productivity_32dp
+            CategoryType.SELF_DEVELOPMENT -> R.drawable.ic_category_self_development_32dp
+            CategoryType.LANGUAGE -> R.drawable.ic_category_language_32dp
+            CategoryType.FUN -> R.drawable.ic_category_fun_32dp
+            CategoryType.DAILY -> R.drawable.ic_category_daily_32dp
+            CategoryType.LEGAL -> R.drawable.ic_category_legal_32dp
         }
     }
 
-    private fun createFilterTag(filter: SearchFilter, onRemove: () -> Unit): View {
-        // 동적으로 필터 태그 생성
-        // TODO: 실제 구현 필요
-        return View(this) // 임시
-    }
-
     private fun showSortFilterDialog() {
-        // 정렬/필터 다이얼로그 표시
         val sortOptions = arrayOf("인기순", "최신순", "좋아요순", "조회순")
 
-        androidx.appcompat.app.AlertDialog.Builder(this)
+        AlertDialog.Builder(this)
             .setTitle("정렬 방식")
             .setItems(sortOptions) { _, which ->
                 searchResultViewModel.setSortFilter(sortOptions[which])

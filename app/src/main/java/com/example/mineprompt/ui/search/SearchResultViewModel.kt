@@ -13,6 +13,9 @@ class SearchResultViewModel : ViewModel() {
     private val _activeFilters = MutableLiveData<List<SearchFilter>>()
     val activeFilters: LiveData<List<SearchFilter>> = _activeFilters
 
+    private val _selectedCategories = MutableLiveData<List<CategoryFilterItem>>()
+    val selectedCategories: LiveData<List<CategoryFilterItem>> = _selectedCategories
+
     private val _currentSortFilter = MutableLiveData<String>()
     val currentSortFilter: LiveData<String> = _currentSortFilter
 
@@ -20,6 +23,7 @@ class SearchResultViewModel : ViewModel() {
 
     init {
         _currentSortFilter.value = "인기순"
+        _selectedCategories.value = emptyList()
         _activeFilters.value = listOf(
             SearchFilter("전체", FilterType.CATEGORY, isActive = true),
             SearchFilter("개발", FilterType.CATEGORY, isActive = true),
@@ -143,6 +147,42 @@ class SearchResultViewModel : ViewModel() {
         _currentSortFilter.value = sortFilter
 
         // 정렬 변경 시 재검색
+        if (currentQuery.isNotEmpty()) {
+            performSearch(currentQuery)
+        }
+    }
+
+    fun applyCategoryFilters(categories: List<CategoryFilterItem>) {
+        _selectedCategories.value = categories
+
+        // 카테고리 필터 변경 시 재검색
+        if (currentQuery.isNotEmpty()) {
+            performSearch(currentQuery)
+        }
+    }
+
+    // 누락된 메서드들 추가
+    fun removeCategoryFilter(categoryId: Long) {
+        val currentCategories = _selectedCategories.value?.toMutableList() ?: return
+        val updatedCategories = currentCategories.map { category ->
+            if (category.id == categoryId) {
+                category.copy(isSelected = false)
+            } else {
+                category
+            }
+        }
+        _selectedCategories.value = updatedCategories
+
+        // 필터 변경 시 재검색
+        if (currentQuery.isNotEmpty()) {
+            performSearch(currentQuery)
+        }
+    }
+
+    fun updateSelectedCategories(categories: List<CategoryFilterItem>) {
+        _selectedCategories.value = categories
+
+        // 카테고리 필터 변경 시 재검색
         if (currentQuery.isNotEmpty()) {
             performSearch(currentQuery)
         }
