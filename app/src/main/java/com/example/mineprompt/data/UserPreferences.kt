@@ -61,4 +61,15 @@ class UserPreferences(context: Context) {
     fun logout() {
         prefs.edit().clear().apply()
     }
+
+    fun clearUserData() {
+        prefs.edit().apply {
+            remove(KEY_USER_ID)
+            remove(KEY_USER_NICKNAME)
+            remove(KEY_USER_EMAIL)
+            remove(KEY_IS_GUEST)
+            remove(KEY_IS_LOGGED_IN)
+            apply()
+        }
+    }
 }
