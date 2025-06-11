@@ -463,5 +463,86 @@ class PromptRepository(private val context: Context) {
 
         return "${year}년 ${month}월 ${day}일"
     }
+
+    fun getLikedPrompts(categories: List<String> = emptyList(), sortOrder: com.example.mineprompt.ui.likes.LikesViewModel.SortOrder): List<PromptCardItem> {
+        val db = databaseHelper.readableDatabase
+        val prompts = mutableListOf<PromptCardItem>()
+        val currentUserId = userPreferences.getUserId()
+
+        if (currentUserId <= 0 || userPreferences.isGuest()) {
+            return emptyList()
+        }
+
+        try {
+            var sql = """
+            SELECT DISTINCT p.id, p.title, p.content, p.like_count, p.view_count,
+                   p.created_at, u.nickname, ul.created_at as liked_at,
+                   GROUP_CONCAT(DISTINCT c.name) as categories
+            FROM prompts p
+            INNER JOIN user_likes ul ON p.id = ul.prompt_id AND ul.user_id = ?
+            LEFT JOIN users u ON p.creator_id = u.id
+            LEFT JOIN prompt_categories pc ON p.id = pc.prompt_id
+            LEFT JOIN categories c ON pc.category_id = c.id
+            WHERE p.is_active = 1
+        """
+
+            val args = mutableListOf<String>()
+            args.add(currentUserId.toString())
+
+            // 카테고리 필터 추가
+            if (categories.isNotEmpty()) {
+                val categoryPlaceholders = categories.joinToString(",") { "?" }
+                sql += " AND c.name IN ($categoryPlaceholders)"
+                args.addAll(categories)
+            }
+
+            sql += " GROUP BY p.id"
+
+            // 정렬 추가
+            sql += when (sortOrder) {
+                com.example.mineprompt.ui.likes.LikesViewModel.SortOrder.LIKED_DATE -> " ORDER BY ul.created_at DESC"
+                com.example.mineprompt.ui.likes.LikesViewModel.SortOrder.LATEST -> " ORDER BY p.created_at DESC"
+                com.example.mineprompt.ui.likes.LikesViewModel.SortOrder.POPULARITY -> " ORDER BY p.like_count DESC, p.created_at DESC"
+            }
+
+            sql += " LIMIT 100"
+
+            val cursor = db.rawQuery(sql, args.toTypedArray())
+
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow("id"))
+                val title = cursor.getString(cursor.getColumnIndexOrThrow("title"))
+                val content = cursor.getString(cursor.getColumnIndexOrThrow("content"))
+                val likeCount = cursor.getInt(cursor.getColumnIndexOrThrow("like_count"))
+                val viewCount = cursor.getInt(cursor.getColumnIndexOrThrow("view_count"))
+                val createdAt = cursor.getLong(cursor.getColumnIndexOrThrow("created_at"))
+                val creatorName = cursor.getString(cursor.getColumnIndexOrThrow("nickname")) ?: "익명"
+                val categoriesStr = cursor.getString(cursor.getColumnIndexOrThrow("categories")) ?: ""
+
+                val createdDate = formatCreatedDate(createdAt)
+                val categoryList = categoriesStr.split(",").filter { it.isNotEmpty() }
+
+                prompts.add(
+                    PromptCardItem(
+                        id = id,
+                        title = title,
+                        content = content,
+                        creatorName = creatorName,
+                        createdDate = createdDate,
+                        likeCount = likeCount,
+                        viewCount = viewCount,
+                        categories = categoryList,
+                        isLiked = true // 좋아요한 프롬프트이므로 항상 true
+                    )
+                )
+            }
+            cursor.close()
+
+        } catch (e: Exception) {
+            Log.e(TAG, "좋아요한 프롬프트 조회 실패", e)
+        }
+
+        return prompts
+    }
 }
 
