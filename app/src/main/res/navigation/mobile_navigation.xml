@@ -32,6 +32,6 @@
     <fragment
         android:id="@+id/navigation_mypage"
         android:name="com.example.mineprompt.ui.mypage.MyPageFragment"
-        android:label="@string/title_user"
+        android:label="마이"
         tools:layout="@layout/fragment_mypage" />
 </navigation>
