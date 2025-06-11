@@ -41,7 +41,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerViews() {
-        // 트렌딩 큐레이션 (가로 스크롤)
+        // 트렌딩 큐레이션
         trendingAdapter = TrendingCurationAdapter { curationItem ->
             // 큐레이션 클릭 처리
         }
@@ -50,19 +50,21 @@ class HomeFragment : Fragment() {
             adapter = trendingAdapter
         }
 
-        // 주간 인기 프롬프트 (세로 스크롤)
+        // 주간 인기 프롬프트
         weeklyPopularAdapter = WeeklyPopularAdapter { promptItem ->
-            // 프롬프트 클릭 처리
+            val intent = com.example.mineprompt.ui.prompt.PromptDetailActivity.newIntent(requireContext(), promptItem.id)
+            startActivity(intent)
         }
         binding.recyclerViewWeeklyPopular.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = weeklyPopularAdapter
         }
 
-        // 추천 프롬프트 (세로 스크롤)
+        // 추천 프롬프트
         recommendedAdapter = PromptCardAdapter(
             onPromptClick = { promptItem ->
-                // 프롬프트 클릭 처리
+                val intent = com.example.mineprompt.ui.prompt.PromptDetailActivity.newIntent(requireContext(), promptItem.id)
+                startActivity(intent)
             },
             onFavoriteClick = { promptItem ->
                 // 좋아요 클릭 처리

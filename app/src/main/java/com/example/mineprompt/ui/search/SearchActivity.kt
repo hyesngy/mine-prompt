@@ -14,10 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mineprompt.R
 import com.example.mineprompt.databinding.ActivitySearchBinding
 import com.example.mineprompt.ui.common.adapter.PromptCardAdapter
-import com.google.android.flexbox.FlexDirection
-import com.google.android.flexbox.FlexWrap
-import com.google.android.flexbox.FlexboxLayoutManager
-import com.google.android.flexbox.JustifyContent
 
 class SearchActivity : AppCompatActivity() {
 
@@ -99,7 +95,6 @@ class SearchActivity : AppCompatActivity() {
     private fun setupRecyclerViews() {
         // 인기 검색어 어댑터
         popularSearchAdapter = PopularSearchAdapter { searchItem ->
-            // 인기 검색어 클릭 시
             binding.etSearch.setText(searchItem.keyword)
             performSearch()
         }
@@ -112,7 +107,8 @@ class SearchActivity : AppCompatActivity() {
         // 검색 결과 어댑터
         searchResultAdapter = PromptCardAdapter(
             onPromptClick = { promptItem ->
-                // 프롬프트 상세 화면으로 이동
+                val intent = com.example.mineprompt.ui.prompt.PromptDetailActivity.newIntent(this@SearchActivity, promptItem.id)
+                startActivity(intent)
             },
             onFavoriteClick = { promptItem ->
                 searchViewModel.togglePromptLike(promptItem.id)

@@ -2,11 +2,12 @@ package com.example.mineprompt.data
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.util.Log
 import com.example.mineprompt.ui.common.adapter.PromptCardItem
 import com.example.mineprompt.ui.home.TrendingCurationItem
 import com.example.mineprompt.ui.home.WeeklyPopularPromptItem
+import com.example.mineprompt.ui.prompt.CategoryTagItem
+import com.example.mineprompt.ui.prompt.PromptDetailItem
 
 class PromptRepository(private val context: Context) {
 
@@ -369,4 +370,98 @@ class PromptRepository(private val context: Context) {
             "학습", "생산성", "자기계발", "영어", "일본어"
         )
     }
+
+    // 프롬프트 상세 정보 가져오기
+    fun getPromptDetail(promptId: Long): PromptDetailItem? {
+        val db = databaseHelper.readableDatabase
+
+        try {
+            val query = """
+            SELECT p.id, p.title, p.content, p.description, p.purpose, p.keywords, 
+                   p.like_count, p.view_count, p.created_at,
+                   u.nickname,
+                   GROUP_CONCAT(c.id || ':' || c.name) as categories
+            FROM prompts p
+            LEFT JOIN users u ON p.creator_id = u.id
+            LEFT JOIN prompt_categories pc ON p.id = pc.prompt_id
+            LEFT JOIN categories c ON pc.category_id = c.id
+            WHERE p.id = ? AND p.is_active = 1
+            GROUP BY p.id
+        """
+
+            val cursor = db.rawQuery(query, arrayOf(promptId.toString()))
+
+            if (cursor.moveToFirst()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow("id"))
+                val title = cursor.getString(cursor.getColumnIndexOrThrow("title"))
+                val content = cursor.getString(cursor.getColumnIndexOrThrow("content"))
+                val description = cursor.getString(cursor.getColumnIndexOrThrow("description")) ?: title
+                val purpose = cursor.getString(cursor.getColumnIndexOrThrow("purpose")) ?: ""
+                val keywords = cursor.getString(cursor.getColumnIndexOrThrow("keywords")) ?: ""
+                val likeCount = cursor.getInt(cursor.getColumnIndexOrThrow("like_count"))
+                val viewCount = cursor.getInt(cursor.getColumnIndexOrThrow("view_count"))
+                val createdAt = cursor.getLong(cursor.getColumnIndexOrThrow("created_at"))
+                val creatorName = cursor.getString(cursor.getColumnIndexOrThrow("nickname")) ?: "익명"
+                val categoriesString = cursor.getString(cursor.getColumnIndexOrThrow("categories")) ?: ""
+
+                // 카테고리 파싱
+                val categories = if (categoriesString.isNotEmpty()) {
+                    categoriesString.split(",").mapNotNull { categoryData ->
+                        val parts = categoryData.split(":")
+                        if (parts.size == 2) {
+                            CategoryTagItem(
+                                id = parts[0].toLongOrNull() ?: 0,
+                                name = parts[1]
+                            )
+                        } else null
+                    }
+                } else {
+                    emptyList()
+                }
+
+                // 날짜 포맷팅
+                val createdDate = formatCreatedDateDetail(createdAt)
+
+                // 좋아요 여부 확인
+                val isLiked = isPromptLiked(id)
+
+                cursor.close()
+
+                return PromptDetailItem(
+                    id = id,
+                    title = title,
+                    content = content,
+                    description = description,
+                    purpose = purpose,
+                    keywords = keywords,
+                    creatorName = creatorName,
+                    createdDate = createdDate,
+                    likeCount = likeCount,
+                    viewCount = viewCount,
+                    categories = categories,
+                    isLiked = isLiked
+                )
+            }
+
+            cursor.close()
+
+        } catch (e: Exception) {
+            Log.e(TAG, "프롬프트 상세 조회 실패: promptId=$promptId", e)
+        }
+
+        return null
+    }
+
+    // 상세 화면용 날짜 포맷팅 (년월일 표시)
+    private fun formatCreatedDateDetail(timestamp: Long): String {
+        val calendar = java.util.Calendar.getInstance()
+        calendar.timeInMillis = timestamp
+
+        val year = calendar.get(java.util.Calendar.YEAR)
+        val month = calendar.get(java.util.Calendar.MONTH) + 1
+        val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
+
+        return "${year}년 ${month}월 ${day}일"
+    }
 }
+

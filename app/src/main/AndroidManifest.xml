@@ -43,6 +43,11 @@
             android:exported="false"
             android:label="검색 결과"
             android:theme="@style/Theme.MinePrompt" />
+        <activity
+            android:name=".ui.prompt.PromptDetailActivity"
+            android:exported="false"
+            android:label="프롬프트"
+            android:theme="@style/Theme.MinePrompt" />
     </application>
 
 </manifest>

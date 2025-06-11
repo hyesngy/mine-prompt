@@ -60,7 +60,8 @@ class SearchResultActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         searchResultAdapter = PromptCardAdapter(
             onPromptClick = { promptItem ->
-                // 프롬프트 상세 화면으로 이동
+                val intent = com.example.mineprompt.ui.prompt.PromptDetailActivity.newIntent(this@SearchResultActivity, promptItem.id)
+                startActivity(intent)
             },
             onFavoriteClick = { promptItem ->
                 searchResultViewModel.togglePromptLike(promptItem.id)
