@@ -9,6 +9,7 @@ import com.example.mineprompt.MainActivity
 import com.example.mineprompt.data.DatabaseHelper
 import com.example.mineprompt.data.UserPreferences
 import com.example.mineprompt.databinding.ActivityLoginBinding
+import com.example.mineprompt.utils.ToastUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -88,7 +89,7 @@ class LoginActivity : AppCompatActivity() {
         val password = binding.etPassword.text.toString()
 
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "이메일과 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+            ToastUtils.showLogininputRequired(this)
             return
         }
 
@@ -101,16 +102,16 @@ class LoginActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     if (user != null) {
                         userPreferences.saveUserLogin(user.id, user.nickname, user.email)
-                        Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                        ToastUtils.showLoginSuccess(this@LoginActivity)
                         navigateToMain()
                     } else {
-                        Toast.makeText(this@LoginActivity, "이메일 또는 비밀번호가 잘못되었습니다.", Toast.LENGTH_SHORT).show()
+                        ToastUtils.showLoginFailed(this@LoginActivity)
                         binding.btnLogin.isEnabled = true
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@LoginActivity, "로그인 중 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                    ToastUtils.showGeneralError(this@LoginActivity)
                     binding.btnLogin.isEnabled = true
                 }
             }

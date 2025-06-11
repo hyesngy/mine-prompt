@@ -102,6 +102,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tv_more_weekly"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="더보기"
@@ -146,6 +147,7 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tv_more_trending"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="더보기"

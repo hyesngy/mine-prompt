@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mineprompt.data.DatabaseHelper
 import com.example.mineprompt.databinding.ActivitySignupBinding
+import com.example.mineprompt.utils.ToastUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,31 +45,31 @@ class SignupActivity : AppCompatActivity() {
         // 유효성 검사
         when {
             nickname.isEmpty() -> {
-                Toast.makeText(this, "닉네임을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                ToastUtils.showShort(this, "닉네임을 입력해주세요.")
                 return
             }
             nickname.length < 2 -> {
-                Toast.makeText(this, "닉네임은 2자 이상 입력해주세요.", Toast.LENGTH_SHORT).show()
+                ToastUtils.showShort(this, "닉네임은 2자 이상 입력해주세요.")
                 return
             }
             email.isEmpty() -> {
-                Toast.makeText(this, "이메일을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                ToastUtils.showShort(this, "이메일을 입력해주세요.")
                 return
             }
             !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                Toast.makeText(this, "올바른 이메일 형식을 입력해주세요.", Toast.LENGTH_SHORT).show()
+                ToastUtils.showShort(this, "올바른 이메일 형식을 입력해주세요.")
                 return
             }
             password.isEmpty() -> {
-                Toast.makeText(this, "비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
+                ToastUtils.showShort(this, "비밀번호를 입력해주세요.")
                 return
             }
             password.length < 6 -> {
-                Toast.makeText(this, "비밀번호는 6자 이상 입력해주세요.", Toast.LENGTH_SHORT).show()
+                ToastUtils.showShort(this, "비밀번호는 6자 이상 입력해주세요.")
                 return
             }
             password != confirmPassword -> {
-                Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+                ToastUtils.showShort(this, "비밀번호가 일치하지 않습니다.")
                 return
             }
         }
@@ -83,11 +84,11 @@ class SignupActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     when (duplicateCheck) {
                         "nickname" -> {
-                            Toast.makeText(this@SignupActivity, "이미 사용 중인 닉네임입니다.", Toast.LENGTH_SHORT).show()
+                            ToastUtils.showShort(this@SignupActivity, "이미 사용 중인 닉네임입니다.")
                             binding.btnNext.isEnabled = true
                         }
                         "email" -> {
-                            Toast.makeText(this@SignupActivity, "이미 사용 중인 이메일입니다.", Toast.LENGTH_SHORT).show()
+                            ToastUtils.showShort(this@SignupActivity, "이미 사용 중인 이메일입니다.")
                             binding.btnNext.isEnabled = true
                         }
                         "none" -> {
@@ -103,7 +104,7 @@ class SignupActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(this@SignupActivity, "오류가 발생했습니다. 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
+                    ToastUtils.showGeneralError(this@SignupActivity)
                     binding.btnNext.isEnabled = true
                 }
             }

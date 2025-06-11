@@ -11,6 +11,7 @@ import com.example.mineprompt.R
 import com.example.mineprompt.databinding.FragmentHomeBinding
 import com.example.mineprompt.ui.common.adapter.PromptCardAdapter
 import com.example.mineprompt.ui.search.SearchActivity
+import com.example.mineprompt.utils.ToastUtils
 
 class HomeFragment : Fragment() {
 
@@ -75,10 +76,17 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
-        // 검색바 클릭 시 검색 화면으로 이동
         binding.root.findViewById<View>(R.id.layout_search_bar)?.setOnClickListener {
             val intent = SearchActivity.newIntent(requireContext())
             startActivity(intent)
+        }
+
+        binding.tvMoreTrending.setOnClickListener {
+            ToastUtils.showComingSoon(requireContext())
+        }
+
+        binding.tvMoreWeekly.setOnClickListener {
+            ToastUtils.showComingSoon(requireContext())
         }
     }
 
