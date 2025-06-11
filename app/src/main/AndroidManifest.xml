@@ -51,6 +51,11 @@
             android:exported="false"
             android:label="프롬프트"
             android:theme="@style/Theme.MinePrompt" />
+        <activity
+            android:name=".ui.category.CategoryPromptListActivity"
+            android:exported="false"
+            android:label="카테고리"
+            android:theme="@style/Theme.MinePrompt" />
     </application>
 
 </manifest>

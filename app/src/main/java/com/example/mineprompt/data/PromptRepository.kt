@@ -544,5 +544,174 @@ class PromptRepository(private val context: Context) {
 
         return prompts
     }
+
+    // 카테고리별 프롬프트 가져오기
+    fun getPromptsByCategory(categories: List<String>, sortType: com.example.mineprompt.ui.category.CategorySortType): List<PromptCardItem> {
+        val db = databaseHelper.readableDatabase
+        val prompts = mutableListOf<PromptCardItem>()
+
+        try {
+            var sql = """
+            SELECT DISTINCT p.id, p.title, p.content, p.like_count, p.view_count,
+                   p.created_at, u.nickname,
+                   GROUP_CONCAT(DISTINCT c.name) as categories
+            FROM prompts p
+            LEFT JOIN users u ON p.creator_id = u.id
+            LEFT JOIN prompt_categories pc ON p.id = pc.prompt_id
+            LEFT JOIN categories c ON pc.category_id = c.id
+            WHERE p.is_active = 1
+        """
+
+            val args = mutableListOf<String>()
+
+            // 카테고리 필터 추가 (비어있으면 전체)
+            if (categories.isNotEmpty()) {
+                val categoryPlaceholders = categories.joinToString(",") { "?" }
+                sql += " AND c.name IN ($categoryPlaceholders)"
+                args.addAll(categories)
+            }
+
+            sql += " GROUP BY p.id"
+
+            // 정렬 추가
+            sql += when (sortType) {
+                com.example.mineprompt.ui.category.CategorySortType.RECOMMENDED -> " ORDER BY p.like_count DESC, p.view_count DESC, p.created_at DESC"
+                com.example.mineprompt.ui.category.CategorySortType.POPULAR -> " ORDER BY p.like_count DESC, p.created_at DESC"
+                com.example.mineprompt.ui.category.CategorySortType.LATEST -> " ORDER BY p.created_at DESC"
+            }
+
+            sql += " LIMIT 100"
+
+            val cursor = db.rawQuery(sql, args.toTypedArray())
+
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow("id"))
+                val title = cursor.getString(cursor.getColumnIndexOrThrow("title"))
+                val content = cursor.getString(cursor.getColumnIndexOrThrow("content"))
+                val likeCount = cursor.getInt(cursor.getColumnIndexOrThrow("like_count"))
+                val viewCount = cursor.getInt(cursor.getColumnIndexOrThrow("view_count"))
+                val createdAt = cursor.getLong(cursor.getColumnIndexOrThrow("created_at"))
+                val creatorName = cursor.getString(cursor.getColumnIndexOrThrow("nickname")) ?: "익명"
+                val categoriesStr = cursor.getString(cursor.getColumnIndexOrThrow("categories")) ?: ""
+
+                val createdDate = formatCreatedDate(createdAt)
+                val categoryList = categoriesStr.split(",").filter { it.isNotEmpty() }
+                val isLiked = isPromptLiked(id)
+
+                prompts.add(
+                    PromptCardItem(
+                        id = id,
+                        title = title,
+                        content = content,
+                        creatorName = creatorName,
+                        createdDate = createdDate,
+                        likeCount = likeCount,
+                        viewCount = viewCount,
+                        categories = categoryList,
+                        isLiked = isLiked
+                    )
+                )
+            }
+            cursor.close()
+
+        } catch (e: Exception) {
+            Log.e(TAG, "카테고리별 프롬프트 조회 실패", e)
+        }
+
+        return prompts
+    }
+
+    // 사용자 관심 카테고리 기반 추천 프롬프트
+    fun getRecommendedPromptsByUserInterest(sortType: com.example.mineprompt.ui.category.CategorySortType): List<PromptCardItem> {
+        val db = databaseHelper.readableDatabase
+        val prompts = mutableListOf<PromptCardItem>()
+        val currentUserId = userPreferences.getUserId()
+
+        try {
+            val sql = if (currentUserId > 0 && !userPreferences.isGuest()) {
+                // 로그인한 사용자: 즐겨찾기한 카테고리 기반 추천
+                """
+            SELECT DISTINCT p.id, p.title, p.content, p.like_count, p.view_count,
+                   p.created_at, u.nickname,
+                   GROUP_CONCAT(DISTINCT c.name) as categories,
+                   (CASE WHEN ufc.category_id IS NOT NULL THEN 1 ELSE 0 END) as is_favorite_category
+            FROM prompts p
+            LEFT JOIN users u ON p.creator_id = u.id
+            LEFT JOIN prompt_categories pc ON p.id = pc.prompt_id
+            LEFT JOIN categories c ON pc.category_id = c.id
+            LEFT JOIN user_favorite_categories ufc ON c.id = ufc.category_id AND ufc.user_id = ?
+            WHERE p.is_active = 1
+            GROUP BY p.id
+            ORDER BY is_favorite_category DESC, 
+                     ${when (sortType) {
+                    com.example.mineprompt.ui.category.CategorySortType.RECOMMENDED -> "p.like_count DESC, p.view_count DESC, p.created_at DESC"
+                    com.example.mineprompt.ui.category.CategorySortType.POPULAR -> "p.like_count DESC, p.created_at DESC"
+                    com.example.mineprompt.ui.category.CategorySortType.LATEST -> "p.created_at DESC"
+                }}
+            LIMIT 50
+            """
+            } else {
+                // 게스트: 전체 프롬프트에서 추천
+                """
+            SELECT p.id, p.title, p.content, p.like_count, p.view_count,
+                   p.created_at, u.nickname,
+                   GROUP_CONCAT(DISTINCT c.name) as categories
+            FROM prompts p
+            LEFT JOIN users u ON p.creator_id = u.id
+            LEFT JOIN prompt_categories pc ON p.id = pc.prompt_id
+            LEFT JOIN categories c ON pc.category_id = c.id
+            WHERE p.is_active = 1
+            GROUP BY p.id
+            ORDER BY ${when (sortType) {
+                    com.example.mineprompt.ui.category.CategorySortType.RECOMMENDED -> "p.like_count DESC, p.view_count DESC, p.created_at DESC"
+                    com.example.mineprompt.ui.category.CategorySortType.POPULAR -> "p.like_count DESC, p.created_at DESC"
+                    com.example.mineprompt.ui.category.CategorySortType.LATEST -> "p.created_at DESC"
+                }}
+            LIMIT 50
+            """
+            }
+
+            val cursor = if (currentUserId > 0 && !userPreferences.isGuest()) {
+                db.rawQuery(sql, arrayOf(currentUserId.toString()))
+            } else {
+                db.rawQuery(sql, null)
+            }
+
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow("id"))
+                val title = cursor.getString(cursor.getColumnIndexOrThrow("title"))
+                val content = cursor.getString(cursor.getColumnIndexOrThrow("content"))
+                val likeCount = cursor.getInt(cursor.getColumnIndexOrThrow("like_count"))
+                val viewCount = cursor.getInt(cursor.getColumnIndexOrThrow("view_count"))
+                val createdAt = cursor.getLong(cursor.getColumnIndexOrThrow("created_at"))
+                val creatorName = cursor.getString(cursor.getColumnIndexOrThrow("nickname")) ?: "익명"
+                val categoriesStr = cursor.getString(cursor.getColumnIndexOrThrow("categories")) ?: ""
+
+                val createdDate = formatCreatedDate(createdAt)
+                val categoryList = categoriesStr.split(",").filter { it.isNotEmpty() }
+                val isLiked = isPromptLiked(id)
+
+                prompts.add(
+                    PromptCardItem(
+                        id = id,
+                        title = title,
+                        content = content,
+                        creatorName = creatorName,
+                        createdDate = createdDate,
+                        likeCount = likeCount,
+                        viewCount = viewCount,
+                        categories = categoryList,
+                        isLiked = isLiked
+                    )
+                )
+            }
+            cursor.close()
+
+        } catch (e: Exception) {
+            Log.e(TAG, "추천 프롬프트 조회 실패", e)
+        }
+
+        return prompts
+    }
 }
 
