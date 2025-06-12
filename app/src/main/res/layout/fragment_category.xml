@@ -82,14 +82,14 @@
                         android:layout_height="24dp"
                         android:layout_marginBottom="8dp"
                         android:src="@drawable/ic_category_all_24dp"
-                        app:tint="@color/gray_300" />
+                        app:tint="@color/gray_100" />
 
                     <TextView
                         android:id="@+id/tv_all"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="전체"
-                        android:textColor="@color/gray_200"
+                        android:textColor="@color/gray_100"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
@@ -123,14 +123,14 @@
                         android:layout_height="24dp"
                         android:layout_marginBottom="8dp"
                         android:src="@drawable/ic_category_award_24dp"
-                        app:tint="@color/gray_300" />
+                        app:tint="@color/yellow" />
 
                     <TextView
                         android:id="@+id/tv_popular"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="인기"
-                        android:textColor="@color/gray_200"
+                        android:textColor="@color/yellow"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
@@ -164,14 +164,14 @@
                         android:layout_height="24dp"
                         android:layout_marginBottom="8dp"
                         android:src="@drawable/ic_category_trend_24dp"
-                        app:tint="@color/gray_300" />
+                        app:tint="@color/red" />
 
                     <TextView
                         android:id="@+id/tv_latest"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="최신"
-                        android:textColor="@color/gray_200"
+                        android:textColor="@color/red"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
@@ -205,14 +205,14 @@
                         android:layout_height="24dp"
                         android:layout_marginBottom="8dp"
                         android:src="@drawable/ic_category_recommend_24dp"
-                        app:tint="@color/gray_300" />
+                        app:tint="@color/blue" />
 
                     <TextView
                         android:id="@+id/tv_recommended"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="추천"
-                        android:textColor="@color/gray_200"
+                        android:textColor="@color/blue"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
