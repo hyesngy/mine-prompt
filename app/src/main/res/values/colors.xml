@@ -49,6 +49,10 @@
     <color name="background_gradient_center">#2D2D2D</color>
     <color name="background_gradient_end">#1E1E1E</color>
 
+    <color name="splash_background_start">#0F0F23</color>
+    <color name="splash_background_center">#1A1A2E</color>
+    <color name="splash_background_end">#16213E</color>
+
     <color name="colorPrimary">@color/primary_500</color>
     <color name="colorPrimaryVariant">@color/primary_600</color>
     <color name="colorOnPrimary">@color/white</color>
