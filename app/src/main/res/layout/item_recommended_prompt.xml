@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="AI마스터"
-                android:textColor="@color/gray_400"
+                android:textColor="@color/gray_200"
                 android:textSize="12sp" />
 
             <!-- 통계 정보 -->
@@ -130,7 +130,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2일 전"
-                    android:textColor="@color/gray_500"
+                    android:textColor="@color/gray_200"
                     android:textSize="12sp" />
 
             </LinearLayout>
