@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@color/gray_500"
-    tools:context=".auth.CategorySelectionActivity">
+    tools:context=".ui.auth.CategorySelectionActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
