@@ -24,6 +24,21 @@
         <item name="colorPrimarySurface">@color/gray_900</item>
     </style>
 
+
+    <style name="Theme.MinePrompt.NoActionBar" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary_500</item>
+        <item name="colorPrimaryVariant">@color/primary_600</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurface">@color/gray_600</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="android:colorBackground">@color/gray_800</item>
+        <item name="colorOnBackground">@color/white</item>
+        <item name="android:windowBackground">@color/gray_500</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@color/gray_800</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
     <style name="Theme.MinePrompt.Dialog" parent="Theme.MaterialComponents.DayNight.Dialog">
         <item name="colorPrimary">@color/primary_500</item>
         <item name="colorOnPrimary">@color/white</item>
