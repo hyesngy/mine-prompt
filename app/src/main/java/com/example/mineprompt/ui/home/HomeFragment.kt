@@ -9,6 +9,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.mineprompt.R
 import com.example.mineprompt.databinding.FragmentHomeBinding
+import com.example.mineprompt.ui.category.CategoryFilterType
+import com.example.mineprompt.ui.category.CategoryPromptListActivity
+import com.example.mineprompt.ui.category.CategorySortType
 import com.example.mineprompt.ui.common.adapter.PromptCardAdapter
 import com.example.mineprompt.ui.search.SearchActivity
 import com.example.mineprompt.utils.ToastUtils
@@ -84,11 +87,11 @@ class HomeFragment : Fragment() {
         }
 
         binding.tvMoreTrending.setOnClickListener {
-            ToastUtils.showComingSoon(requireContext())
+            navigateToRecommendedPrompts()
         }
 
         binding.tvMoreWeekly.setOnClickListener {
-            ToastUtils.showComingSoon(requireContext())
+            navigateToPopularPrompts()
         }
     }
 
@@ -107,6 +110,26 @@ class HomeFragment : Fragment() {
         homeViewModel.recommendedPrompts.observe(viewLifecycleOwner) { prompts ->
             recommendedAdapter.submitList(prompts)
         }
+    }
+
+    private fun navigateToPopularPrompts() {
+        val intent = CategoryPromptListActivity.newIntent(
+            context = requireContext(),
+            title = "인기 프롬프트",
+            filterType = CategoryFilterType.ALL,
+            sortType = CategorySortType.POPULAR
+        )
+        startActivity(intent)
+    }
+
+    private fun navigateToRecommendedPrompts() {
+        val intent = CategoryPromptListActivity.newIntent(
+            context = requireContext(),
+            title = "추천 프롬프트",
+            filterType = CategoryFilterType.ALL,
+            sortType = CategorySortType.RECOMMENDED
+        )
+        startActivity(intent)
     }
 
     override fun onDestroyView() {
