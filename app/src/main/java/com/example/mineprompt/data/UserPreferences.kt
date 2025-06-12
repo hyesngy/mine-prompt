@@ -31,6 +31,17 @@ class UserPreferences(context: Context) {
         }
     }
 
+    fun setUserLoggedIn(userId: Int, username: String, email: String) {
+        prefs.edit().apply {
+            putBoolean(KEY_IS_LOGGED_IN, true)
+            putLong(KEY_USER_ID, userId.toLong())
+            putString(KEY_USER_NICKNAME, username)
+            putString(KEY_USER_EMAIL, email)
+            putBoolean(KEY_IS_GUEST, false)
+            apply()
+        }
+    }
+
     fun setGuestLogin() {
         prefs.edit().apply {
             putBoolean(KEY_IS_LOGGED_IN, true)
