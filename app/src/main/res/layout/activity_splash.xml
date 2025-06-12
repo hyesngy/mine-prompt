@@ -64,9 +64,8 @@
             android:layout_marginBottom="24dp"
             android:background="@drawable/bg_logo_splash"
             android:elevation="8dp"
-            android:padding="30dp"
-            android:src="@drawable/ic_app_logo"
-            app:tint="@color/white" />
+            android:src="@drawable/ic_splash_icon"
+            android:scaleType="centerInside" />
 
         <!-- 앱 타이틀 -->
         <TextView
