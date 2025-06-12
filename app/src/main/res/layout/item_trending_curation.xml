@@ -23,18 +23,34 @@
             android:background="@drawable/trending_item_background"
             android:padding="12dp">
 
-            <ImageView
-                android:id="@+id/iv_curation_image"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginBottom="8dp"
-                android:background="@drawable/rounded_corner_8dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/placeholder_curation"
                 app:layout_constraintBottom_toTopOf="@id/tv_curation_title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <!-- 배경 ImageView -->
+                <ImageView
+                    android:id="@+id/iv_curation_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/rounded_corner_8dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/placeholder_curation" />
+
+                <ImageView
+                    android:id="@+id/iv_category_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center"
+                    android:padding="4dp"
+                    android:background="@drawable/category_icon_background"
+                    android:src="@drawable/ic_category_content_creation_32dp" />
+
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/tv_curation_title"

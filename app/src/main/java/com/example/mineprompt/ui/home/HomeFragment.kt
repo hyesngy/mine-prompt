@@ -46,7 +46,11 @@ class HomeFragment : Fragment() {
     private fun setupRecyclerViews() {
         // 트렌딩 큐레이션
         trendingAdapter = TrendingCurationAdapter { curationItem ->
-            // 큐레이션 클릭 처리
+            val intent = com.example.mineprompt.ui.prompt.PromptDetailActivity.newIntent(
+                requireContext(),
+                curationItem.id
+            )
+            startActivity(intent)
         }
         binding.recyclerViewTrending.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -141,6 +145,8 @@ class HomeFragment : Fragment() {
 data class TrendingCurationItem(
     val id: Long,
     val title: String,
+    val categoryId: Long? = null,
+    val categoryName: String? = null,
     val imageUrl: String? = null,
     val imageRes: Int? = null
 )

@@ -60,7 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="요즘 유행 프롬프트 큐레이션"
+                android:text="엄선된 프롬프트 큐레이션"
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />

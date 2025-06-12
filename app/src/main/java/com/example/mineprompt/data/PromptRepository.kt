@@ -3,6 +3,7 @@ package com.example.mineprompt.data
 import android.content.ContentValues
 import android.content.Context
 import android.util.Log
+import androidx.core.database.getLongOrNull
 import com.example.mineprompt.ui.common.adapter.PromptCardItem
 import com.example.mineprompt.ui.home.TrendingCurationItem
 import com.example.mineprompt.ui.home.WeeklyPopularPromptItem
@@ -18,13 +19,61 @@ class PromptRepository(private val context: Context) {
         private const val TAG = "PromptRepository"
     }
 
-    // 홈 화면용 데이터 가져오기
     fun getTrendingCurations(): List<TrendingCurationItem> {
-        return listOf(
-            TrendingCurationItem(1, "AI 프롬프트 작성법"),
-            TrendingCurationItem(2, "창작 영감 모음집"),
-            TrendingCurationItem(3, "비즈니스 필수 템플릿")
-        )
+        val db = databaseHelper.readableDatabase
+        val curations = mutableListOf<TrendingCurationItem>()
+
+        try {
+            val query = """
+            SELECT p.id, p.title, c.id as category_id, c.name as category_name
+            FROM prompts p
+            LEFT JOIN prompt_categories pc ON p.id = pc.prompt_id
+            LEFT JOIN categories c ON pc.category_id = c.id
+            WHERE p.id IN (1, 2, 3) AND p.is_active = 1
+            GROUP BY p.id
+            ORDER BY p.id
+        """
+
+            val cursor = db.rawQuery(query, null)
+
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow("id"))
+                val title = cursor.getString(cursor.getColumnIndexOrThrow("title"))
+                val categoryId = cursor.getLongOrNull(cursor.getColumnIndexOrThrow("category_id"))
+                val categoryName = cursor.getString(cursor.getColumnIndexOrThrow("category_name"))
+
+                curations.add(TrendingCurationItem(
+                    id = id,
+                    title = title,
+                    categoryId = categoryId,
+                    categoryName = categoryName
+                ))
+            }
+
+            cursor.close()
+            if (curations.isEmpty()) {
+                return listOf(
+                    TrendingCurationItem(1, "AI 프롬프트 작성법", 2, "비즈니스"),
+                    TrendingCurationItem(2, "창작 영감 모음집", 1, "콘텐츠 제작"),
+                    TrendingCurationItem(3, "비즈니스 필수 템플릿", 5, "개발")
+                )
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "트렌딩 큐레이션 조회 실패", e)
+            // 에러 시 기본값 반환
+            return listOf(
+                TrendingCurationItem(1, "AI 프롬프트 작성법", 2, "비즈니스"),
+                TrendingCurationItem(2, "창작 영감 모음집", 1, "콘텐츠 제작"),
+                TrendingCurationItem(3, "비즈니스 필수 템플릿", 5, "개발")
+            )
+        }
+
+        return curations
+    }
+
+    private fun android.database.Cursor.getLongOrNull(columnIndex: Int): Long? {
+        return if (isNull(columnIndex)) null else getLong(columnIndex)
     }
 
     fun getWeeklyPopularPrompts(): List<WeeklyPopularPromptItem> {

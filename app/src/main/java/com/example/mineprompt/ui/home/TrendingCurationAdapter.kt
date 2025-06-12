@@ -5,9 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.mineprompt.R
+import com.example.mineprompt.data.CategoryType
 import com.example.mineprompt.databinding.ItemTrendingCurationBinding
 
-// 트렌딩 큐레이션 어댑터
 class TrendingCurationAdapter(
     private val onItemClick: (TrendingCurationItem) -> Unit
 ) : ListAdapter<TrendingCurationItem, TrendingCurationAdapter.ViewHolder>(TrendingCurationDiffCallback()) {
@@ -31,6 +32,9 @@ class TrendingCurationAdapter(
             binding.apply {
                 tvCurationTitle.text = item.title
 
+                val categoryIcon = getCategoryIcon(item.categoryId)
+                ivCategoryIcon.setImageResource(categoryIcon)
+
                 item.imageRes?.let { resId ->
                     ivCurationImage.setImageResource(resId)
                 }
@@ -38,6 +42,25 @@ class TrendingCurationAdapter(
                 root.setOnClickListener {
                     onItemClick(item)
                 }
+            }
+        }
+
+        private fun getCategoryIcon(categoryId: Long?): Int {
+            val categoryType = CategoryType.entries.find { it.id == categoryId }
+            return when (categoryType) {
+                CategoryType.CONTENT_CREATION -> R.drawable.ic_category_content_creation_32dp
+                CategoryType.BUSINESS -> R.drawable.ic_category_business_32dp
+                CategoryType.MARKETING -> R.drawable.ic_category_marketing_32dp
+                CategoryType.WRITING -> R.drawable.ic_category_writing_32dp
+                CategoryType.DEVELOPMENT -> R.drawable.ic_category_development_32dp
+                CategoryType.LEARNING -> R.drawable.ic_category_learning_32dp
+                CategoryType.PRODUCTIVITY -> R.drawable.ic_category_productivity_32dp
+                CategoryType.SELF_DEVELOPMENT -> R.drawable.ic_category_self_development_32dp
+                CategoryType.LANGUAGE -> R.drawable.ic_category_language_32dp
+                CategoryType.FUN -> R.drawable.ic_category_fun_32dp
+                CategoryType.DAILY -> R.drawable.ic_category_daily_32dp
+                CategoryType.LEGAL -> R.drawable.ic_category_legal_32dp
+                else -> R.drawable.ic_category_daily_32dp // 기본 아이콘
             }
         }
     }
