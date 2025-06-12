@@ -2,6 +2,7 @@ package com.example.mineprompt.ui.common.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -39,7 +40,7 @@ class PromptCardAdapter(
                 tvLikeCount.text = item.likeCount.toString()
                 tvViewCount.text = item.viewCount.toString()
 
-                // 좋아요
+                // 좋아요 상태
                 if (item.isLiked) {
                     ivFavorite.setImageResource(R.drawable.ic_favorite_filled_20dp)
                     ivFavorite.setColorFilter(ContextCompat.getColor(root.context, R.color.red))
@@ -48,7 +49,8 @@ class PromptCardAdapter(
                     ivFavorite.setColorFilter(ContextCompat.getColor(root.context, R.color.gray_300))
                 }
 
-                // TODO: 동적 카테고리 태그 레이아웃 구현
+                // 동적 카테고리 태그 표시
+                setupCategoryTags(item.categories)
 
                 root.setOnClickListener {
                     onPromptClick(item)
@@ -57,6 +59,42 @@ class PromptCardAdapter(
                 ivFavorite.setOnClickListener {
                     onFavoriteClick(item)
                 }
+            }
+        }
+
+        private fun setupCategoryTags(categories: List<String>) {
+            binding.layoutCategoryTags.removeAllViews()
+
+            // 최대 3개까지만 표시
+            categories.take(3).forEach { categoryName ->
+                val tagView = createCategoryTag(categoryName)
+                binding.layoutCategoryTags.addView(tagView)
+            }
+        }
+
+        private fun createCategoryTag(categoryName: String): TextView {
+            val context = binding.root.context
+
+            return TextView(context).apply {
+                text = categoryName
+                textSize = 10f
+                setTextColor(ContextCompat.getColor(context, R.color.primary_500))
+                background = ContextCompat.getDrawable(context, R.drawable.category_tag_background)
+                typeface = android.graphics.Typeface.DEFAULT_BOLD
+
+                // 패딩 설정 (paddingHorizontal="8dp", paddingVertical="4dp")
+                val paddingHorizontal = (8 * context.resources.displayMetrics.density).toInt()
+                val paddingVertical = (4 * context.resources.displayMetrics.density).toInt()
+                setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical)
+
+                // 마진 설정 (marginEnd="6dp")
+                val layoutParams = ViewGroup.MarginLayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    marginEnd = (6 * context.resources.displayMetrics.density).toInt()
+                }
+                this.layoutParams = layoutParams
             }
         }
     }
