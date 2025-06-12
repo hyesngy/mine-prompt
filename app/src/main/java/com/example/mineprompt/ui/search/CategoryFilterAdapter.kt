@@ -51,12 +51,15 @@ class CategoryFilterAdapter(
                     cardCategory.strokeColor = ContextCompat.getColor(root.context, R.color.primary_500)
                     cardCategory.strokeWidth = 2
                     ivCheck.visibility = View.VISIBLE
-                    cardCategory.setCardBackgroundColor(ContextCompat.getColor(root.context, R.color.primary_100))
+                    cardCategory.setCardBackgroundColor(ContextCompat.getColor(root.context, R.color.primary_500))
+                    tvCategoryName.setTextColor(ContextCompat.getColor(root.context, R.color.white))
                 } else {
                     cardCategory.strokeColor = ContextCompat.getColor(root.context, R.color.gray_400)
                     cardCategory.strokeWidth = 1
                     ivCheck.visibility = View.GONE
                     cardCategory.setCardBackgroundColor(ContextCompat.getColor(root.context, R.color.gray_700))
+                    tvCategoryName.setTextColor(ContextCompat.getColor(root.context, R.color.white))
+                    ivCategoryIcon.clearColorFilter()
                 }
             }
         }

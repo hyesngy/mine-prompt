@@ -18,7 +18,8 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:minHeight="56dp">
 
         <ImageView
             android:id="@+id/iv_category_icon"
@@ -34,12 +35,15 @@
             android:layout_weight="1"
             android:text="콘텐츠 제작"
             android:textColor="@color/white"
-            android:textSize="14sp" />
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:ellipsize="end" />
 
         <ImageView
             android:id="@+id/iv_check"
             android:layout_width="20dp"
             android:layout_height="20dp"
+            android:layout_marginStart="8dp"
             android:src="@drawable/ic_check_20dp"
             android:visibility="gone"
             app:tint="@color/primary_500" />
