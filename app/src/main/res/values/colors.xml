@@ -44,4 +44,16 @@
     <color name="red_500">#FFEF4444</color>
     <color name="red_800">#FF991B1B</color>
     <color name="red_900">#FF7F1D1D</color>
+
+    <color name="background_gradient_start">#1A1A1A</color>
+    <color name="background_gradient_center">#2D2D2D</color>
+    <color name="background_gradient_end">#1E1E1E</color>
+
+    <color name="colorPrimary">@color/primary_500</color>
+    <color name="colorPrimaryVariant">@color/primary_600</color>
+    <color name="colorOnPrimary">@color/white</color>
+    <color name="colorSurface">@color/gray_600</color>
+    <color name="colorOnSurface">@color/white</color>
+    <color name="colorBackground">@color/gray_800</color>
+    <color name="colorOnBackground">@color/white</color>
 </resources>
