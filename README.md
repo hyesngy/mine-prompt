@@ -2,7 +2,7 @@
 프롬프트 생성부터, 추천까지 <br>
 > 사용자가 목적에 맞는 프롬프트를 쉽게 찾고, AI 기반으로 생성할 수 있도록 도와주는 프롬프트 큐레이션 & 자동 생성 플랫폼
 
-<img width="1920" height="1080" alt="1" src="https://github.com/user-attachments/assets/660d1c0d-1a14-4130-aa67-8b1ab42657cd" />
+<img width="1920" height="1080" alt="1" src="https://github.com/user-attachments/assets/db39e357-e6c3-4104-bd3c-0e7bc27c2b0c" />
 
 <img width="1920" height="1080" alt="2" src="https://github.com/user-attachments/assets/0df07b34-ae3a-4f1e-a28a-b0c967c8217c" />
 
